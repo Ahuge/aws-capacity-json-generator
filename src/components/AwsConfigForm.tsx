@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -19,6 +19,8 @@ interface AwsConfigFormProps {
 }
 
 export function AwsConfigForm({ onSubmit }: AwsConfigFormProps) {
+  let initialRender = false
+  let noError = true
   const [searchParams, setSearchParams] = useSearchParams();
 
   const getFromSearchParams = (parameterName: string) => {
@@ -115,9 +117,16 @@ export function AwsConfigForm({ onSubmit }: AwsConfigFormProps) {
 
 
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: Event) => {
     e.preventDefault();
-    
+
+    if (noError === true) {
+      if (!accountId || !launchTemplateId || !targetCapacity || selectedInstanceTypes.length === 0 || subnetIds[0] === "") {
+        // Don't error if it is our first render
+        return;
+      }
+    }
+
     if (!accountId || !launchTemplateId || !targetCapacity || selectedInstanceTypes.length === 0 || subnetIds[0] === "") {
       toast.error("Please fill in all required fields");
       return;
@@ -142,6 +151,13 @@ export function AwsConfigForm({ onSubmit }: AwsConfigFormProps) {
     });
   };
 
+  useEffect(() => {
+    noError = true
+    handleSubmit(new Event("null"))
+    noError = false
+  }, [initialRender])
+
+  initialRender = true
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-4">
