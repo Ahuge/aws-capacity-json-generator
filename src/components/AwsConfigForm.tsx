@@ -79,9 +79,11 @@ export function AwsConfigForm({ onSubmit }: AwsConfigFormProps) {
     setSubnetIds(subnetIds.filter((_, i) => i !== index));
   };
 
-  const filteredInstanceTypes = awsInstanceTypes.filter(type =>
-    type.toLowerCase().includes(instanceTypeFilter.toLowerCase())
-  );
+  const filteredInstanceTypes = awsInstanceTypes.filter(type => {
+    const searchTerm = instanceTypeFilter.toLowerCase().replace(/\./g, '');
+    const instanceType = type.toLowerCase().replace(/\./g, '');
+    return instanceType.includes(searchTerm);
+  });
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -122,7 +124,7 @@ export function AwsConfigForm({ onSubmit }: AwsConfigFormProps) {
           <Label>Instance Types</Label>
           <div className="space-y-2">
             <Input
-              placeholder="Search instance types..."
+              placeholder="Search instance types... (e.g., 'c52' for 'c5.2xlarge')"
               value={instanceTypeFilter}
               onChange={(e) => setInstanceTypeFilter(e.target.value)}
               className="mb-2"
