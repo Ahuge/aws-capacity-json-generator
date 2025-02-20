@@ -8,6 +8,7 @@ export default function Index() {
   const [jsonConfig, setJsonConfig] = useState<object | null>(null);
 
   const handleFormSubmit = (data: {
+    accountId: string;
     launchTemplateId: string;
     targetCapacity: number;
     instanceTypes: string[];

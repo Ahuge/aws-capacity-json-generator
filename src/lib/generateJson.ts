@@ -1,5 +1,6 @@
 
 interface ConfigInput {
+  accountId: string;
   launchTemplateId: string;
   targetCapacity: number;
   instanceTypes: string[];
@@ -9,7 +10,7 @@ interface ConfigInput {
 export function generateAwsConfig(input: ConfigInput) {
   const now = new Date();
   const futureDate = new Date();
-  futureDate.setFullYear(now.getFullYear() + 6);
+  futureDate.setFullYear(now.getFullYear() + 10);
 
   const overrides = input.instanceTypes.flatMap(instanceType =>
     input.subnetIds.map(subnetId => ({
@@ -20,7 +21,7 @@ export function generateAwsConfig(input: ConfigInput) {
   );
 
   return {
-    IamFleetRole: "arn:aws:iam::633951357428:role/aws-ec2-spot-fleet-tagging-role",
+    IamFleetRole: `arn:aws:iam::${input.accountId}:role/aws-ec2-spot-fleet-tagging-role`,
     AllocationStrategy: "priceCapacityOptimized",
     TargetCapacity: input.targetCapacity,
     ValidFrom: now.toISOString(),

@@ -17,6 +17,7 @@ import { toast } from "sonner";
 
 interface AwsConfigFormProps {
   onSubmit: (data: {
+    accountId: string;
     launchTemplateId: string;
     targetCapacity: number;
     instanceTypes: string[];
@@ -25,6 +26,7 @@ interface AwsConfigFormProps {
 }
 
 export function AwsConfigForm({ onSubmit }: AwsConfigFormProps) {
+  const [accountId, setAccountId] = useState("");
   const [launchTemplateId, setLaunchTemplateId] = useState("");
   const [targetCapacity, setTargetCapacity] = useState("");
   const [selectedInstanceTypes, setSelectedInstanceTypes] = useState<string[]>([]);
@@ -34,12 +36,19 @@ export function AwsConfigForm({ onSubmit }: AwsConfigFormProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!launchTemplateId || !targetCapacity || selectedInstanceTypes.length === 0 || subnetIds[0] === "") {
+    if (!accountId || !launchTemplateId || !targetCapacity || selectedInstanceTypes.length === 0 || subnetIds[0] === "") {
       toast.error("Please fill in all required fields");
       return;
     }
 
+    // Basic validation for AWS account ID format (12 digits)
+    if (!/^\d{12}$/.test(accountId)) {
+      toast.error("AWS Account ID must be exactly 12 digits");
+      return;
+    }
+
     onSubmit({
+      accountId,
       launchTemplateId,
       targetCapacity: parseInt(targetCapacity),
       instanceTypes: selectedInstanceTypes,
@@ -72,6 +81,16 @@ export function AwsConfigForm({ onSubmit }: AwsConfigFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="accountId">AWS Account ID</Label>
+          <Input
+            id="accountId"
+            placeholder="Enter your 12-digit AWS Account ID"
+            value={accountId}
+            onChange={(e) => setAccountId(e.target.value)}
+          />
+        </div>
+
         <div className="space-y-2">
           <Label htmlFor="launchTemplateId">Launch Template ID</Label>
           <Input
