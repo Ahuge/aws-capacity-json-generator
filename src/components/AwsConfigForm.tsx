@@ -3,17 +3,9 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { awsInstanceTypes } from "@/lib/awsInstanceTypes";
-import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "sonner";
+import { InstanceTypesSelector } from "./aws-config/InstanceTypesSelector";
+import { SubnetIdsInput } from "./aws-config/SubnetIdsInput";
 
 interface AwsConfigFormProps {
   onSubmit: (data: {
@@ -31,8 +23,6 @@ export function AwsConfigForm({ onSubmit }: AwsConfigFormProps) {
   const [targetCapacity, setTargetCapacity] = useState("");
   const [selectedInstanceTypes, setSelectedInstanceTypes] = useState<string[]>([]);
   const [subnetIds, setSubnetIds] = useState<string[]>([""]);
-  const [newSubnetId, setNewSubnetId] = useState("");
-  const [instanceTypeFilter, setInstanceTypeFilter] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,34 +46,6 @@ export function AwsConfigForm({ onSubmit }: AwsConfigFormProps) {
       subnetIds: subnetIds.filter(Boolean),
     });
   };
-
-  const handleInstanceTypeSelect = (type: string) => {
-    if (selectedInstanceTypes.includes(type)) {
-      setSelectedInstanceTypes(selectedInstanceTypes.filter((t) => t !== type));
-    } else {
-      setSelectedInstanceTypes([...selectedInstanceTypes, type]);
-    }
-  };
-
-  const addSubnetId = () => {
-    if (!newSubnetId) return;
-    if (subnetIds.includes(newSubnetId)) {
-      toast.error("This subnet ID is already added");
-      return;
-    }
-    setSubnetIds([...subnetIds.filter(Boolean), newSubnetId]);
-    setNewSubnetId("");
-  };
-
-  const removeSubnetId = (index: number) => {
-    setSubnetIds(subnetIds.filter((_, i) => i !== index));
-  };
-
-  const filteredInstanceTypes = awsInstanceTypes.filter(type => {
-    const searchTerm = instanceTypeFilter.toLowerCase().replace(/\./g, '');
-    const instanceType = type.toLowerCase().replace(/\./g, '');
-    return instanceType.includes(searchTerm);
-  });
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -120,84 +82,15 @@ export function AwsConfigForm({ onSubmit }: AwsConfigFormProps) {
           />
         </div>
 
-        <div className="space-y-2">
-          <Label>Instance Types</Label>
-          <div className="space-y-2">
-            <Input
-              placeholder="Search instance types... (e.g., 'c52' for 'c5.2xlarge')"
-              value={instanceTypeFilter}
-              onChange={(e) => setInstanceTypeFilter(e.target.value)}
-              className="mb-2"
-            />
-            <ScrollArea className="h-[200px] border rounded-md p-4">
-              <div className="space-y-2">
-                {filteredInstanceTypes.map((type) => (
-                  <div
-                    key={type}
-                    className={`p-2 rounded-md cursor-pointer transition-colors ${
-                      selectedInstanceTypes.includes(type)
-                        ? "bg-primary text-primary-foreground"
-                        : "hover:bg-muted"
-                    }`}
-                    onClick={() => handleInstanceTypeSelect(type)}
-                  >
-                    {type}
-                  </div>
-                ))}
-                {filteredInstanceTypes.length === 0 && (
-                  <div className="text-muted-foreground text-center py-4">
-                    No instance types found
-                  </div>
-                )}
-              </div>
-            </ScrollArea>
-            <div className="flex flex-wrap gap-2 mt-2">
-              {selectedInstanceTypes.map((type) => (
-                <Badge key={type} variant="secondary">
-                  {type}
-                </Badge>
-              ))}
-            </div>
-          </div>
-        </div>
+        <InstanceTypesSelector 
+          selectedTypes={selectedInstanceTypes}
+          onChange={setSelectedInstanceTypes}
+        />
 
-        <div className="space-y-2">
-          <Label>Subnet IDs</Label>
-          <div className="space-y-2">
-            {subnetIds.map((subnetId, index) => (
-              <div key={index} className="flex gap-2">
-                <Input
-                  value={subnetId}
-                  onChange={(e) => {
-                    const newSubnetIds = [...subnetIds];
-                    newSubnetIds[index] = e.target.value;
-                    setSubnetIds(newSubnetIds);
-                  }}
-                  placeholder="Enter Subnet ID"
-                />
-                {index > 0 && (
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    onClick={() => removeSubnetId(index)}
-                  >
-                    Remove
-                  </Button>
-                )}
-              </div>
-            ))}
-          </div>
-          <div className="flex gap-2">
-            <Input
-              value={newSubnetId}
-              onChange={(e) => setNewSubnetId(e.target.value)}
-              placeholder="New Subnet ID"
-            />
-            <Button type="button" onClick={addSubnetId}>
-              Add Subnet
-            </Button>
-          </div>
-        </div>
+        <SubnetIdsInput 
+          subnetIds={subnetIds}
+          onChange={setSubnetIds}
+        />
       </div>
 
       <Button type="submit" className="w-full">
