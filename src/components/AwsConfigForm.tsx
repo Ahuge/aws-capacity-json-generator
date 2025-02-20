@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { InstanceTypesSelector } from "./aws-config/InstanceTypesSelector";
 import { SubnetIdsInput } from "./aws-config/SubnetIdsInput";
+import { useSearchParams } from 'react-router-dom';
 
 interface AwsConfigFormProps {
   onSubmit: (data: {
@@ -18,11 +19,101 @@ interface AwsConfigFormProps {
 }
 
 export function AwsConfigForm({ onSubmit }: AwsConfigFormProps) {
-  const [accountId, setAccountId] = useState("");
-  const [launchTemplateId, setLaunchTemplateId] = useState("");
-  const [targetCapacity, setTargetCapacity] = useState("");
-  const [selectedInstanceTypes, setSelectedInstanceTypes] = useState<string[]>([]);
-  const [subnetIds, setSubnetIds] = useState<string[]>([""]);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const getFromSearchParams = (parameterName: string) => {
+    const value = searchParams.get(parameterName)
+    if (value === null) {
+      return ""
+    }
+    return value
+  }
+  const getListFromSearchParams = (parameterName: string) => {
+    const value = searchParams.get(parameterName);
+    if (value === null) {
+      return []
+    }
+    return value.split(",") || []
+  }
+
+  const [accountId, setAccountId] = useState(getFromSearchParams("accountId"));
+  const [launchTemplateId, setLaunchTemplateId] = useState(getFromSearchParams("launchTemplateId"));
+  const [targetCapacity, setTargetCapacity] = useState(getFromSearchParams("targetCapacity"));
+  const [selectedInstanceTypes, setSelectedInstanceTypes] = useState<string[]>(getListFromSearchParams("instances"));
+  const [subnetIds, setSubnetIds] = useState<string[]>(getListFromSearchParams("subnetIds"));
+
+  const getAllSearchParams = () => {
+    const params = {}
+
+    const instances = getListFromSearchParams("instances")
+    const subnetIds = getListFromSearchParams("subnetIds")
+
+    const accountId = getFromSearchParams("accountId")
+    const launchTemplateId = getFromSearchParams("launchTemplateId")
+    const targetCapacity = getFromSearchParams("targetCapacity")
+
+
+    if (instances.length > 0) {
+      params["instances"] = instances.join(",")
+    }
+    if (subnetIds.length > 0) {
+      params["subnetIds"] = subnetIds.join(",")
+    }
+
+    if (accountId !== "") {
+      params["accountId"] = accountId
+    }
+    if (launchTemplateId !== "") {
+      params["launchTemplateId"] = launchTemplateId
+    }
+    if (targetCapacity !== "") {
+      params["targetCapacity"] = targetCapacity
+    }
+
+    return params
+  }
+
+  const handleSetSelectedInstanceTypes = (newInstanceTypes: string[]) => {
+    setSelectedInstanceTypes(newInstanceTypes.filter((v) => v.length));
+    console.log(newInstanceTypes)
+    const params = getAllSearchParams()
+    params["instances"] = newInstanceTypes.join(",")
+    setSearchParams(params)
+  }
+
+  const handleSetAccountId = (newAccountId: string) => {
+    setAccountId(newAccountId);
+    console.log(newAccountId)
+    const params = getAllSearchParams()
+    params["accountId"] = newAccountId
+    setSearchParams(params)
+  }
+
+  const handleSetLaunchTemplateId = (newLaunchTemplateId: string) => {
+    setLaunchTemplateId(newLaunchTemplateId);
+    console.log(newLaunchTemplateId)
+    const params = getAllSearchParams()
+    params["launchTemplateId"] = newLaunchTemplateId
+    setSearchParams(params)
+  }
+
+  const handleSetTargetCapacity = (newTargetCapacity: string) => {
+    setTargetCapacity(newTargetCapacity);
+    console.log(newTargetCapacity)
+    const params = getAllSearchParams()
+    params["targetCapacity"] = newTargetCapacity
+    setSearchParams(params)
+  }
+
+  const handleSetSubnetIds = (newSubnetIds: string[]) => {
+    setSubnetIds(newSubnetIds);
+    console.log(newSubnetIds)
+    const params = getAllSearchParams()
+    params["subnetIds"] = newSubnetIds.join(",")
+    setSearchParams(params)
+  }
+
+
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,7 +147,7 @@ export function AwsConfigForm({ onSubmit }: AwsConfigFormProps) {
             id="accountId"
             placeholder="Enter your 12-digit AWS Account ID"
             value={accountId}
-            onChange={(e) => setAccountId(e.target.value)}
+            onChange={(e) => handleSetAccountId(e.target.value)}
           />
         </div>
 
@@ -66,7 +157,7 @@ export function AwsConfigForm({ onSubmit }: AwsConfigFormProps) {
             id="launchTemplateId"
             placeholder="Enter Launch Template ID"
             value={launchTemplateId}
-            onChange={(e) => setLaunchTemplateId(e.target.value)}
+            onChange={(e) => handleSetLaunchTemplateId(e.target.value)}
           />
         </div>
 
@@ -78,18 +169,18 @@ export function AwsConfigForm({ onSubmit }: AwsConfigFormProps) {
             min="1"
             placeholder="Enter target capacity"
             value={targetCapacity}
-            onChange={(e) => setTargetCapacity(e.target.value)}
+            onChange={(e) => handleSetTargetCapacity(e.target.value)}
           />
         </div>
 
         <InstanceTypesSelector 
           selectedTypes={selectedInstanceTypes}
-          onChange={setSelectedInstanceTypes}
+          onChange={handleSetSelectedInstanceTypes}
         />
 
         <SubnetIdsInput 
           subnetIds={subnetIds}
-          onChange={setSubnetIds}
+          onChange={handleSetSubnetIds}
         />
       </div>
 
