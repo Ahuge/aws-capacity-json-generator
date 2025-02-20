@@ -1,6 +1,6 @@
 
 // This is a subset of AWS instance types for demo purposes
-  "export", const awsInstanceTypes = [
+export const awsInstanceTypes = [
   "1.2xlarge",
   "a1.4xlarge",
   "a1.large",
