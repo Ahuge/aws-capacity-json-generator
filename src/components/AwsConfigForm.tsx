@@ -32,6 +32,7 @@ export function AwsConfigForm({ onSubmit }: AwsConfigFormProps) {
   const [selectedInstanceTypes, setSelectedInstanceTypes] = useState<string[]>([]);
   const [subnetIds, setSubnetIds] = useState<string[]>([""]);
   const [newSubnetId, setNewSubnetId] = useState("");
+  const [instanceTypeFilter, setInstanceTypeFilter] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -78,6 +79,10 @@ export function AwsConfigForm({ onSubmit }: AwsConfigFormProps) {
     setSubnetIds(subnetIds.filter((_, i) => i !== index));
   };
 
+  const filteredInstanceTypes = awsInstanceTypes.filter(type =>
+    type.toLowerCase().includes(instanceTypeFilter.toLowerCase())
+  );
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-4">
@@ -115,29 +120,42 @@ export function AwsConfigForm({ onSubmit }: AwsConfigFormProps) {
 
         <div className="space-y-2">
           <Label>Instance Types</Label>
-          <ScrollArea className="h-[200px] border rounded-md p-4">
-            <div className="space-y-2">
-              {awsInstanceTypes.map((type) => (
-                <div
-                  key={type}
-                  className={`p-2 rounded-md cursor-pointer transition-colors ${
-                    selectedInstanceTypes.includes(type)
-                      ? "bg-primary text-primary-foreground"
-                      : "hover:bg-muted"
-                  }`}
-                  onClick={() => handleInstanceTypeSelect(type)}
-                >
+          <div className="space-y-2">
+            <Input
+              placeholder="Search instance types..."
+              value={instanceTypeFilter}
+              onChange={(e) => setInstanceTypeFilter(e.target.value)}
+              className="mb-2"
+            />
+            <ScrollArea className="h-[200px] border rounded-md p-4">
+              <div className="space-y-2">
+                {filteredInstanceTypes.map((type) => (
+                  <div
+                    key={type}
+                    className={`p-2 rounded-md cursor-pointer transition-colors ${
+                      selectedInstanceTypes.includes(type)
+                        ? "bg-primary text-primary-foreground"
+                        : "hover:bg-muted"
+                    }`}
+                    onClick={() => handleInstanceTypeSelect(type)}
+                  >
+                    {type}
+                  </div>
+                ))}
+                {filteredInstanceTypes.length === 0 && (
+                  <div className="text-muted-foreground text-center py-4">
+                    No instance types found
+                  </div>
+                )}
+              </div>
+            </ScrollArea>
+            <div className="flex flex-wrap gap-2 mt-2">
+              {selectedInstanceTypes.map((type) => (
+                <Badge key={type} variant="secondary">
                   {type}
-                </div>
+                </Badge>
               ))}
             </div>
-          </ScrollArea>
-          <div className="flex flex-wrap gap-2 mt-2">
-            {selectedInstanceTypes.map((type) => (
-              <Badge key={type} variant="secondary">
-                {type}
-              </Badge>
-            ))}
           </div>
         </div>
 
