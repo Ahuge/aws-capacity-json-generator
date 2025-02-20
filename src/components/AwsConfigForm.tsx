@@ -128,6 +128,10 @@ export function AwsConfigForm({ onSubmit }: AwsConfigFormProps) {
       toast.error("AWS Account ID must be exactly 12 digits");
       return;
     }
+    if (!/^lt-[a-z0-9]{17}$/.test(launchTemplateId)) {
+      toast.error("AWS EC2 Launch Templates must start with \"lt-\" and be followed by 17 characters");
+      return;
+    }
 
     onSubmit({
       accountId,
