@@ -19,6 +19,10 @@ export function SubnetIdsInput({ subnetIds, onChange }: SubnetIdsInputProps) {
       toast.error("This subnet ID is already added");
       return;
     }
+    if (!/^subnet-[a-z0-9]{17}$/.test(newSubnetId)) {
+      toast.error("AWS VPC Subnets must start with \"subnet-\" and be followed by 17 characters");
+      return;
+    }
     onChange([...subnetIds.filter(Boolean), newSubnetId]);
     setNewSubnetId("");
   };
