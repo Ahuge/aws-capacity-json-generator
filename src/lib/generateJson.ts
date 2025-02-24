@@ -24,8 +24,6 @@ export function generateAwsConfig(input: ConfigInput) {
     IamFleetRole: `arn:aws:iam::${input.accountId}:role/aws-ec2-spot-fleet-tagging-role`,
     AllocationStrategy: "priceCapacityOptimized",
     TargetCapacity: input.targetCapacity,
-    ValidFrom: now.toISOString(),
-    ValidUntil: futureDate.toISOString(),
     TerminateInstancesWithExpiration: true,
     Type: "maintain",
     OnDemandAllocationStrategy: "lowestPrice",
