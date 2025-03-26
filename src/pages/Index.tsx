@@ -1,11 +1,14 @@
-
 import { useState } from "react";
 import { AwsConfigForm } from "@/components/AwsConfigForm";
 import { JsonPreview } from "@/components/JsonPreview";
 import { generateAwsConfig } from "@/lib/generateJson";
+import {useSearchParams} from "react-router-dom";
+import { getAllSearchParamsWithData } from "@/lib/params";
+
 
 export default function Index() {
   const [jsonConfig, setJsonConfig] = useState<object | null>(null);
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const handleFormSubmit = (data: {
     accountId: string;
@@ -14,8 +17,26 @@ export default function Index() {
     instanceTypes: string[];
     subnetIds: string[];
   }) => {
+    console.log("handleFormSubmit")
+    console.log(data)
     const config = generateAwsConfig(data);
+    console.log(config)
     setJsonConfig(config);
+  };
+
+  const handleImportJson = (data: {
+    accountId: string;
+    launchTemplateId: string;
+    targetCapacity: number;
+    instanceTypes: string[];
+    subnetIds: string[];
+  }) => {
+
+    const params = getAllSearchParamsWithData(searchParams, data)
+    console.log("handleImportJson")
+    console.log(params);
+    setSearchParams(params)
+    handleFormSubmit(data);
   };
 
   return (
@@ -32,7 +53,7 @@ export default function Index() {
           </div>
         </div>
         <div>
-          <JsonPreview data={jsonConfig} />
+          <JsonPreview data={jsonConfig} onImportJson={handleImportJson} />
         </div>
       </div>
     </div>
