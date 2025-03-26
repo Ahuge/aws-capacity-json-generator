@@ -7,10 +7,12 @@ import {Textarea} from "@/components/ui/textarea.tsx";
 import {JsonConfiguration, newSearchParamsData, OverrideJsonType} from "../lib/types"
 import { JsonPreviewProps } from "../lib/props"
 import {ValidateInputs} from "@/lib/validateInputs.ts";
+import {Checkbox} from "@/components/ui/checkbox.tsx";
 
 export function JsonPreview({ data, onImportJson }: JsonPreviewProps) {
   const [jsonText, setJsonText] = useState<string>("");
   const jsonString = JSON.stringify(data, null, 2);
+  const [lastSyncedData, setLastSyncedData] = useState(data);
   const preRef = useRef<HTMLPreElement>(null);
   const textareaRef = useRef(null);
 
@@ -24,21 +26,27 @@ export function JsonPreview({ data, onImportJson }: JsonPreviewProps) {
   };
   const restorePosition = (position) => {
     if (!textareaRef.current || !position) return;
-    textareaRef.current.selectionStart = position.selectionStart;
-    textareaRef.current.selectionEnd = position.selectionEnd;
-    textareaRef.current.scrollTop = position.scrollTop;
+    requestAnimationFrame(() => {
+      textareaRef.current.selectionStart = position.selectionStart;
+      textareaRef.current.selectionEnd = position.selectionEnd;
+      textareaRef.current.scrollTop = position.scrollTop;
+    });
   };
 
-  // useEffect(() => {
-  //   if (data) {
-  //     setJsonText(JSON.stringify(data, null, 2));
-  //   }
-  // }, [data]);
+  useEffect(() => {
+    if (data !== lastSyncedData) {
+      const position = savePosition();
+      const newValue = JSON.stringify(data, null, 2);
 
-  useLayoutEffect(() => {
-    const position = savePosition();
-    setJsonText(JSON.stringify(data, null, 2));
-    restorePosition(position);
+      // Directly update the DOM to avoid React's re-render delay
+      if (textareaRef.current) {
+        textareaRef.current.value = newValue;
+        restorePosition(position);
+      }
+
+      setJsonText(newValue);
+      setLastSyncedData(data);
+    }
   }, [data]);
 
   const handleCopy = async () => {
@@ -68,7 +76,7 @@ export function JsonPreview({ data, onImportJson }: JsonPreviewProps) {
     if (handleImportWithData(event.target.value)) {
       setJsonText(jsonText)
     }
-    setTimeout(() => restorePosition(position), 0);
+    restorePosition(position);
   };
 
   const handleImportWithData = (data: string) : boolean => {
@@ -134,7 +142,6 @@ export function JsonPreview({ data, onImportJson }: JsonPreviewProps) {
             Copy
           </Button>
           <Button onClick={handleDownload}>Download JSON</Button>
-          <Button onClick={handleImport}>Import JSON</Button>
         </div>
       </div>
       <ScrollArea className="h-[600px] w-full">
