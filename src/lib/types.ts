@@ -42,3 +42,13 @@ export const emptySearchParamsData = () : SearchParamsData => {
       targetCapacity: 0
     }
 }
+
+export const newSearchParamsData = (accountId: string, instanceTypes: string[], launchTemplateId: string, subnetIds: string[], targetCapacity: number) : SearchParamsData => {
+    return {
+      accountId: accountId,
+      instanceTypes: instanceTypes,
+      launchTemplateId: launchTemplateId,
+      subnetIds: subnetIds,
+      targetCapacity: targetCapacity,
+    }
+}

@@ -1,21 +1,44 @@
 
-import { useState, useEffect, ChangeEvent, useRef } from "react";
+import {useState, useEffect, ChangeEvent, useRef, useLayoutEffect} from "react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "sonner";
 import {Textarea} from "@/components/ui/textarea.tsx";
-import { JsonConfiguration, OverrideJsonType } from "../lib/types"
+import {JsonConfiguration, newSearchParamsData, OverrideJsonType} from "../lib/types"
 import { JsonPreviewProps } from "../lib/props"
+import {ValidateInputs} from "@/lib/validateInputs.ts";
 
 export function JsonPreview({ data, onImportJson }: JsonPreviewProps) {
   const [jsonText, setJsonText] = useState<string>("");
   const jsonString = JSON.stringify(data, null, 2);
   const preRef = useRef<HTMLPreElement>(null);
+  const textareaRef = useRef(null);
 
-  useEffect(() => {
-    if (data) {
-      setJsonText(JSON.stringify(data, null, 2));
-    }
+  const savePosition = () => {
+    if (!textareaRef.current) return null;
+    return {
+      selectionStart: textareaRef.current.selectionStart,
+      selectionEnd: textareaRef.current.selectionEnd,
+      scrollTop: textareaRef.current.scrollTop,
+    };
+  };
+  const restorePosition = (position) => {
+    if (!textareaRef.current || !position) return;
+    textareaRef.current.selectionStart = position.selectionStart;
+    textareaRef.current.selectionEnd = position.selectionEnd;
+    textareaRef.current.scrollTop = position.scrollTop;
+  };
+
+  // useEffect(() => {
+  //   if (data) {
+  //     setJsonText(JSON.stringify(data, null, 2));
+  //   }
+  // }, [data]);
+
+  useLayoutEffect(() => {
+    const position = savePosition();
+    setJsonText(JSON.stringify(data, null, 2));
+    restorePosition(position);
   }, [data]);
 
   const handleCopy = async () => {
@@ -41,9 +64,11 @@ export function JsonPreview({ data, onImportJson }: JsonPreviewProps) {
   const handleJsonChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     console.log("handleJsonChange")
     console.log(event.target.value)
+    const position = savePosition();
     if (handleImportWithData(event.target.value)) {
       setJsonText(jsonText)
     }
+    setTimeout(() => restorePosition(position), 0);
   };
 
   const handleImportWithData = (data: string) : boolean => {
@@ -86,6 +111,11 @@ export function JsonPreview({ data, onImportJson }: JsonPreviewProps) {
     const instanceTypes = json.LaunchTemplateConfigs[0].Overrides.map((override: OverrideJsonType) => override.InstanceType).filter(onlyUnique);
     const subnetIds = json.LaunchTemplateConfigs[0].Overrides.map((override: OverrideJsonType) => override.SubnetId).filter(onlyUnique);
 
+    const searchParamsData = newSearchParamsData(accountId, instanceTypes, launchTemplateId, subnetIds, targetCapacity)
+    if (!ValidateInputs(searchParamsData)) {
+      throw "Invalid Inputs"
+    }
+
     return {
       accountId,
       launchTemplateId,
@@ -112,7 +142,11 @@ export function JsonPreview({ data, onImportJson }: JsonPreviewProps) {
           ref={preRef}
         >
           <Textarea
-          className="p-6 text-sm font-mono bg-muted/50 overflow-auto h-[600px] w-full" value={jsonText} onChange={handleJsonChange}/>
+            ref={textareaRef}
+            className="p-6 text-sm font-mono bg-muted/50 overflow-auto h-[600px] w-full"
+            value={jsonText}
+            onChange={handleJsonChange}
+          />
         </pre>
       </ScrollArea>
     </div>

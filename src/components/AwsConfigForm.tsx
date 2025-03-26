@@ -8,6 +8,8 @@ import { SubnetIdsInput } from "./aws-config/SubnetIdsInput";
 import { useSearchParams } from 'react-router-dom';
 import { AwsConfigFormProps} from "@/lib/props.ts";
 import { getFromSearchParams, getListFromSearchParams, getAllSearchParamsWithData } from "@/lib/params.ts";
+import {newSearchParamsData} from "@/lib/types.ts";
+import {ValidateInputs} from "@/lib/validateInputs.ts";
 
 
 export function AwsConfigForm({ onSubmit }: AwsConfigFormProps) {
@@ -105,22 +107,8 @@ export function AwsConfigForm({ onSubmit }: AwsConfigFormProps) {
       }
     }
 
-    if (!accountId || !launchTemplateId || !targetCapacity || selectedInstanceTypes.length === 0 || subnetIds[0] === "") {
-      toast.error("Please fill in all required fields");
-      return;
-    }
-
-    // Basic validation for AWS account ID format (12 digits)
-    if (!/^\d{12}$/.test(accountId)) {
-      toast.error("AWS Account ID must be exactly 12 digits");
-      return;
-    }
-    if (!/^lt-[a-z0-9]{17}$/.test(launchTemplateId)) {
-      toast.error("AWS EC2 Launch Templates must start with \"lt-\" and be followed by 17 characters");
-      return;
-    }
-    if (subnetIds.length < 1) {
-      toast.error("You must add add least one subnet ID");
+    const searchParamsData = newSearchParamsData(accountId, selectedInstanceTypes, launchTemplateId, subnetIds, parseInt(targetCapacity, 10))
+    if (!ValidateInputs(searchParamsData)) {
       return;
     }
 
