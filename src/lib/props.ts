@@ -17,4 +17,16 @@ export interface AwsConfigFormProps {
     instanceTypes: string[];
     subnetIds: string[];
   }) => void;
+  onInstanceSelectionChanged: (selected: string[]) => void;
+}
+
+export interface InstanceManagerProps {
+  onUrlPasted: (selected: string[]) => void;
+  selectedInstances: string[]
+}
+
+export interface exportToVantageUrlProps {
+  filter: string[];
+  selected: string[];
+  compareOn: boolean;
 }
