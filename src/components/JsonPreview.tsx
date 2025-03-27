@@ -7,7 +7,6 @@ import {Textarea} from "@/components/ui/textarea.tsx";
 import {JsonConfiguration, newSearchParamsData, OverrideJsonType} from "../lib/types"
 import { JsonPreviewProps } from "../lib/props"
 import {ValidateInputs} from "@/lib/validateInputs.ts";
-import {Checkbox} from "@/components/ui/checkbox.tsx";
 
 export function JsonPreview({ data, onImportJson }: JsonPreviewProps) {
   const [jsonText, setJsonText] = useState<string>("");
@@ -15,6 +14,15 @@ export function JsonPreview({ data, onImportJson }: JsonPreviewProps) {
   const [lastSyncedData, setLastSyncedData] = useState(data);
   const preRef = useRef<HTMLPreElement>(null);
   const textareaRef = useRef(null);
+  const timerRef = useRef();
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
+  }, []);
 
   const savePosition = () => {
     if (!textareaRef.current) return null;
@@ -70,14 +78,23 @@ export function JsonPreview({ data, onImportJson }: JsonPreviewProps) {
   };
 
   const handleJsonChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
-    console.log("handleJsonChange")
-    console.log(event.target.value)
-    const position = savePosition();
-    if (handleImportWithData(event.target.value)) {
-      setJsonText(jsonText)
+  const newValue = event.target.value;
+  const position = savePosition();
+
+  // Update local state immediately for responsive typing
+  setJsonText(newValue);
+
+  if (timerRef.current) {
+    clearTimeout(timerRef.current);
+  }
+
+  timerRef.current = setTimeout(() => {
+    if (newValue !== JSON.stringify(lastSyncedData, null, 2)) {
+      handleImportWithData(newValue);
+      restorePosition(position);
     }
-    restorePosition(position);
-  };
+  }, 500);
+};
 
   const handleImportWithData = (data: string) : boolean => {
     try {
@@ -144,13 +161,13 @@ export function JsonPreview({ data, onImportJson }: JsonPreviewProps) {
           <Button onClick={handleDownload}>Download JSON</Button>
         </div>
       </div>
-      <ScrollArea className="h-[600px] w-full">
+      <ScrollArea className="h-[450px] w-full">
         <pre
           ref={preRef}
         >
           <Textarea
             ref={textareaRef}
-            className="p-6 text-sm font-mono bg-muted/50 overflow-auto h-[600px] w-full"
+            className="p-6 text-sm font-mono bg-muted/50 overflow-auto h-[450px] w-full"
             value={jsonText}
             onChange={handleJsonChange}
           />
