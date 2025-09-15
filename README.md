@@ -1,14 +1,12 @@
 # AWS Deadline Spot Event JSON Generator
 
-(See here) https://deadline-spot-event-generator.netlify.app/
-
 A web-based tool to simplify the creation of JSON configuration files for the [AWS Thinkbox Deadline Spot Event Plugin](httpss://docs.thinkboxsoftware.com/products/deadline/10.4/1_User%20Manual/manual/event-spot.html).
 
-### [Try the Live Demo](httpss://deadline-spot-event-generator.netlify.app/)
+### [Try the Live Demo](https://deadline-spot-event-generator.netlify.app/)
 
 ---
 
-![Demo of the AWS Deadline Spot Event JSON Generator](https://via.placeholder.com/800x400.png?text=App+Demo+GIF+Here)
+![Demo of the AWS Deadline Spot Event JSON Generator](./AWS-Spot-Fleet-Configuration-Generator.gif)
 
 ## The Problem
 
