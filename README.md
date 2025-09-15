@@ -1,69 +1,38 @@
-# Welcome to your Lovable project
+# AWS Deadline Spot Event JSON Generator
 
-## Project info
+(See here) https://deadline-spot-event-generator.netlify.app/
 
-**URL**: https://lovable.dev/projects/24e9b423-68d8-45a4-af40-2b41014443ef
+A web-based tool to simplify the creation of JSON configuration files for the [AWS Thinkbox Deadline Spot Event Plugin](httpss://docs.thinkboxsoftware.com/products/deadline/10.4/1_User%20Manual/manual/event-spot.html).
 
-## How can I edit this code?
+### [Try the Live Demo](httpss://deadline-spot-event-generator.netlify.app/)
 
-There are several ways of editing your application.
+---
 
-**Use Lovable**
+![Demo of the AWS Deadline Spot Event JSON Generator](https://via.placeholder.com/800x400.png?text=App+Demo+GIF+Here)
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/24e9b423-68d8-45a4-af40-2b41014443ef) and start prompting.
+## The Problem
 
-Changes made via Lovable will be committed automatically to this repo.
+Configuring the AWS Thinkbox Deadline Spot Event Plugin requires creating a JSON file with specific parameters for your EC2 Spot Fleet. Manually creating and editing this JSON can be tedious and error-prone, especially for those who are not familiar with the required syntax and all the available options.
 
-**Use your preferred IDE**
+## The Solution
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+The **AWS Deadline Spot Event JSON Generator** is a web-based tool that simplifies this process. It provides an intuitive form with all the necessary fields, explanations, and validation, allowing you to quickly and easily generate the required JSON for your Deadline Spot Event Plugin.
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## Features
 
-Follow these steps:
+* **User-friendly Interface:** An intuitive web form to input all the required parameters for your Spot Fleet Request.
+* **Real-time JSON Generation:** The JSON output is updated instantly as you fill out the form.
+* **Easy to Use:** No need to be an expert in JSON or AWS to create your configuration.
+* **Copy to Clipboard:** Easily copy the generated JSON with a single click.
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+## How to Use
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+1.  Navigate to the **[live demo](httpss://deadline-spot-event-generator.netlify.app/)**.
+2.  Fill out the form fields on the left with your desired Spot Fleet configuration.
+3.  The generated JSON will appear in the text box on the right.
+4.  Click the **"Copy"** button to copy the JSON to your clipboard.
+5.  Paste the generated JSON into your Deadline Spot Event Plugin configuration.
 
-# Step 3: Install the necessary dependencies.
-npm i
+## Additional Resources
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with .
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/24e9b423-68d8-45a4-af40-2b41014443ef) and click on Share -> Publish.
-
-## I want to use a custom domain - is that possible?
-
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+* [Increase Your Rendering Capacity with Thinkbox Deadline and AWS](httpss://www.youtube.com/watch?v=3Q87oVNhZto) - A helpful video from AWS explaining how to scale with Deadline.
