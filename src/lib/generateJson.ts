@@ -15,7 +15,6 @@ export function generateAwsConfig(input: ConfigInput) {
   const overrides = input.instanceTypes.flatMap(instanceType =>
     input.subnetIds.map(subnetId => ({
       InstanceType: instanceType,
-      WeightedCapacity: 1,
       SubnetId: subnetId
     }))
   );

@@ -21,7 +21,6 @@ export interface JsonConfiguration {
 
 export interface OverrideJsonType {
   InstanceType: string;
-  WeightedCapacity: number;
   SubnetId: string;
 }
 

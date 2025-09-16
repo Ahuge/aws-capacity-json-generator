@@ -63,7 +63,6 @@ export default function Index() {
       const newOverrides = instances.flatMap(instanceType =>
       subnetIds.map(subnetId => ({
         InstanceType: instanceType,
-        WeightedCapacity: 1, // Default value
         SubnetId: subnetId
       }))
     );
